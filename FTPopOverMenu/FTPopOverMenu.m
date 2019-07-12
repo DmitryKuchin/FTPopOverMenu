@@ -730,41 +730,41 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     }
     
     CGFloat menuHeight = self.config.menuRowHeight * self.menuArray.count + self.menuArrowHeight;
-    CGPoint menuArrowPoint = CGPointMake(senderRect.origin.x + (senderRect.size.width)/2, 0);
-    CGFloat menuX = 0;
+    CGPoint menuArrowPoint = CGPointMake(senderRect.origin.x, senderRect.origin.y);
+    CGFloat menuX = senderRect.origin.x;
     CGRect menuRect = CGRectZero;
     BOOL shouldAutoScroll = NO;
     FTPopOverMenuArrowDirection arrowDirection;
     
     if (senderRect.origin.y + senderRect.size.height/2  < self.heightScreen/2) {
         arrowDirection = FTPopOverMenuArrowDirectionUp;
-        menuArrowPoint.y = 0;
+        //menuArrowPoint.y = 0;
     }else{
         arrowDirection = FTPopOverMenuArrowDirectionDown;
-        menuArrowPoint.y = menuHeight;
+        //menuArrowPoint.y = menuHeight;
     }
-    
-    if (menuArrowPoint.x + self.config.menuWidth/2 + FTDefaultMargin > self.widthScreen) {
-        menuArrowPoint.x = MIN(menuArrowPoint.x - (self.widthScreen - self.config.menuWidth - FTDefaultMargin), self.config.menuWidth - self.menuArrowWidth - FTDefaultMargin);
-        menuX = self.widthScreen - self.config.menuWidth - FTDefaultMargin;
-    }else if ( menuArrowPoint.x - self.config.menuWidth/2 - FTDefaultMargin < 0){
-        menuArrowPoint.x = MAX( FTDefaultMenuCornerRadius + self.menuArrowWidth, menuArrowPoint.x - FTDefaultMargin);
-        menuX = FTDefaultMargin;
-    }else{
-        menuArrowPoint.x = self.config.menuWidth/2;
-        menuX = senderRect.origin.x + (senderRect.size.width)/2 - self.config.menuWidth/2;
-    }
+    //
+    //    if (menuArrowPoint.x + self.config.menuWidth/2 + FTDefaultMargin > self.widthScreen) {
+    //        menuArrowPoint.x = MIN(menuArrowPoint.x - (self.widthScreen - self.config.menuWidth - FTDefaultMargin), self.config.menuWidth - self.menuArrowWidth - FTDefaultMargin);
+    //        menuX = self.widthScreen - self.config.menuWidth - FTDefaultMargin;
+    //    }else if ( menuArrowPoint.x - self.config.menuWidth/2 - FTDefaultMargin < 0){
+    //        menuArrowPoint.x = MAX( FTDefaultMenuCornerRadius + self.menuArrowWidth, menuArrowPoint.x - FTDefaultMargin);
+    //        menuX = FTDefaultMargin;
+    //    }else{
+    //        menuArrowPoint.x = self.config.menuWidth/2;
+    //        menuX = senderRect.origin.x + (senderRect.size.width)/2 - self.config.menuWidth/2;
+    //    }
     
     if (arrowDirection == FTPopOverMenuArrowDirectionUp) {
-        menuRect = CGRectMake(menuX, (senderRect.origin.y + senderRect.size.height), self.config.menuWidth, menuHeight);
+        menuRect = CGRectMake(menuX, (senderRect.origin.y), self.config.menuWidth, menuHeight);
         // if too long and is out of screen
         if (menuRect.origin.y + menuRect.size.height > self.heightScreen) {
-            menuRect = CGRectMake(menuX, (senderRect.origin.y + senderRect.size.height), self.config.menuWidth, self.heightScreen - menuRect.origin.y - FTDefaultMargin);
+            menuRect = CGRectMake(menuX, senderRect.origin.y, self.config.menuWidth, self.heightScreen - menuRect.origin.y - FTDefaultMargin);
             shouldAutoScroll = YES;
         }
     }else{
         
-        menuRect = CGRectMake(menuX, (senderRect.origin.y - menuHeight), self.config.menuWidth, menuHeight);
+        menuRect = CGRectMake(menuX, (senderRect.origin.y), self.config.menuWidth, menuHeight);
         // if too long and is out of screen
         if (menuRect.origin.y  < 0) {
             menuRect = CGRectMake(menuX, FTDefaultMargin, self.config.menuWidth, senderRect.origin.y - FTDefaultMargin);
