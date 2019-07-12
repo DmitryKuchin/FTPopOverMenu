@@ -14,9 +14,6 @@
 #define FTDefaultMenuIconMargin             6.f
 #define FTDefaultMenuCornerRadius           5.f
 #define FTDefaultAnimationDuration          0.2
-// change them at your own risk
-#define KSCREEN_WIDTH                       [[UIScreen mainScreen] bounds].size.width
-#define KSCREEN_HEIGHT                      [[UIScreen mainScreen] bounds].size.height
 #define FTDefaultBackgroundColor            [UIColor clearColor]
 #define FTDefaultTintColor                  [UIColor colorWithRed:80/255.f green:80/255.f blue:80/255.f alpha:1.f]
 #define FTDefaultTextColor                  [UIColor whiteColor]
@@ -635,18 +632,6 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     return _config;
 }
 
-- (UIWindow *)backgroundWindow {
-    if (self.callingWindow != nil) {
-        return self.callingWindow;
-    }
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    id<UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
-    if (window == nil && [delegate respondsToSelector:@selector(window)]){
-        window = [delegate performSelector:@selector(window)];
-    }
-    return window;
-}
-
 - (UIView *)backgroundView {
     if (!_backgroundView) {
         _backgroundView = [[UIView alloc ]initWithFrame:[UIScreen mainScreen].bounds];
@@ -674,6 +659,14 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     return self.config.allowRoundedArrow ? FTDefaultMenuArrowHeight_R : FTDefaultMenuArrowHeight;
 }
 
+- (CGFloat)widthScreen {
+    return UIScreen.mainScreen.bounds.size.width;
+}
+
+- (CGFloat)heightScreen {
+    return UIScreen.mainScreen.bounds.size.height;
+}
+
 - (void)onChangeStatusBarOrientationNotification:(NSNotification *)notification {
     if (self.isCurrentlyOnScreen) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -683,6 +676,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
 }
 
 - (void) showForSender:(UIView *)sender
+              delegate:(id<FTPopOverMenuDelegate>)delegate
                 window:(UIWindow*)window
            senderFrame:(CGRect )senderFrame
               withMenu:(NSArray *)menuArray
@@ -693,8 +687,8 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.config = config ? config : [FTPopOverMenuConfiguration defaultConfiguration];
         self.callingWindow = window;
+        self.delegate = delegate;
         [self.backgroundView addSubview:self.popMenuView];
-        [[self backgroundWindow] addSubview:self.backgroundView];
         
         self.sender = sender;
         self.senderFrame = senderFrame;
@@ -704,12 +698,15 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
         self.dismissBlock = dismissBlock;
         
         [self adjustPopOverMenu];
+        if (self.delegate != nil && [self.delegate conformsToProtocol:FTPopOverMenuDelegate] && [self.delegate respondsToSelector:@selector(presentSetupMenu:)]) {
+            [self.delegate presentSetupMenu:self];
+        }
     });
 }
 
 - (void)adjustPopOverMenu {
     self.backgroundView.backgroundColor = self.config.coverBackgroundColor;
-    [self.backgroundView setFrame:CGRectMake(0, 0, KSCREEN_WIDTH, KSCREEN_HEIGHT)];
+    [self.backgroundView setFrame:CGRectMake(0, 0, self.widthScreen, self.heightScreen)];
 
     CGRect senderRect ;
 
@@ -720,8 +717,8 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     } else {
         senderRect = self.senderFrame;
     }
-    if (senderRect.origin.y > KSCREEN_HEIGHT) {
-        senderRect.origin.y = KSCREEN_HEIGHT;
+    if (senderRect.origin.y > self.heightScreen) {
+        senderRect.origin.y = self.heightScreen;
     }
 
     CGFloat menuHeight = self.config.menuRowHeight * self.menuArray.count + self.menuArrowHeight;
@@ -731,7 +728,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     BOOL shouldAutoScroll = NO;
     FTPopOverMenuArrowDirection arrowDirection;
 
-    if (senderRect.origin.y + senderRect.size.height/2  < KSCREEN_HEIGHT/2) {
+    if (senderRect.origin.y + senderRect.size.height/2  < self.heightScreen/2) {
         arrowDirection = FTPopOverMenuArrowDirectionUp;
         menuArrowPoint.y = 0;
     }else{
@@ -739,9 +736,9 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
         menuArrowPoint.y = menuHeight;
     }
 
-    if (menuArrowPoint.x + self.config.menuWidth/2 + FTDefaultMargin > KSCREEN_WIDTH) {
-        menuArrowPoint.x = MIN(menuArrowPoint.x - (KSCREEN_WIDTH - self.config.menuWidth - FTDefaultMargin), self.config.menuWidth - self.menuArrowWidth - FTDefaultMargin);
-        menuX = KSCREEN_WIDTH - self.config.menuWidth - FTDefaultMargin;
+    if (menuArrowPoint.x + self.config.menuWidth/2 + FTDefaultMargin > self.widthScreen) {
+        menuArrowPoint.x = MIN(menuArrowPoint.x - (self.widthScreen - self.config.menuWidth - FTDefaultMargin), self.config.menuWidth - self.menuArrowWidth - FTDefaultMargin);
+        menuX = self.widthScreen - self.config.menuWidth - FTDefaultMargin;
     }else if ( menuArrowPoint.x - self.config.menuWidth/2 - FTDefaultMargin < 0){
         menuArrowPoint.x = MAX( FTDefaultMenuCornerRadius + self.menuArrowWidth, menuArrowPoint.x - FTDefaultMargin);
         menuX = FTDefaultMargin;
@@ -753,8 +750,8 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     if (arrowDirection == FTPopOverMenuArrowDirectionUp) {
         menuRect = CGRectMake(menuX, (senderRect.origin.y + senderRect.size.height), self.config.menuWidth, menuHeight);
         // if too long and is out of screen
-        if (menuRect.origin.y + menuRect.size.height > KSCREEN_HEIGHT) {
-            menuRect = CGRectMake(menuX, (senderRect.origin.y + senderRect.size.height), self.config.menuWidth, KSCREEN_HEIGHT - menuRect.origin.y - FTDefaultMargin);
+        if (menuRect.origin.y + menuRect.size.height > self.heightScreen) {
+            menuRect = CGRectMake(menuX, (senderRect.origin.y + senderRect.size.height), self.config.menuWidth, self.heightScreen - menuRect.origin.y - FTDefaultMargin);
             shouldAutoScroll = YES;
         }
     }else{

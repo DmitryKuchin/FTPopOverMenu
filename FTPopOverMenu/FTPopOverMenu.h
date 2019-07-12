@@ -86,9 +86,20 @@ typedef void (^FTPopOverMenuDismissBlock)(void);
 @end
 
 /**
+ *  -----------------------FTPopOverMenuDelegate-----------------------
+ */
+@protocol FTPopOverMenuDelegate <NSObject>
+
+- (void)presentSetupMenu:(FTPopOverMenu *)menu;
+
+@end
+
+/**
  *  -----------------------FTPopOverMenu-----------------------
  */
 @interface FTPopOverMenu : NSObject
+
+@property(weak, nonatomic, readwrite) id<FTPopOverMenuDelegate> delegate;
 
 //    menuArray supports following context:
 //    1. image name (NSString, only main bundle),
