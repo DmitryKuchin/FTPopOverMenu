@@ -613,12 +613,13 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
 
 + (void) showFromSenderFrame:(CGRect )senderFrame
                     delegate:(id<FTPopOverMenuDelegate>)delegate
+              keyboardOffset:(CGFloat)keyboardOffset
                withMenuArray:(NSArray *)menuArray
                   imageArray:(NSArray *)imageArray
                configuration:(FTPopOverMenuConfiguration *)configuration
                    doneBlock:(FTPopOverMenuDoneBlock)doneBlock
                 dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame keyboardOffset:keyboardOffset withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 +(void)dismiss {
