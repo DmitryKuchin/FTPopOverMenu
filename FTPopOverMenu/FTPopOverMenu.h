@@ -134,6 +134,7 @@ typedef void (^FTPopOverMenuDismissBlock)(void);
  */
 + (void) showForSender:(UIView *)sender
               delegate:(id<FTPopOverMenuDelegate>)delegate
+        keyboardOffset:(CGFloat)keyboardOffset
          withMenuArray:(NSArray *)menuArray
             imageArray:(NSArray *)imageArray
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock

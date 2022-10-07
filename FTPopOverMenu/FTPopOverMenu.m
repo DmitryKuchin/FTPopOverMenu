@@ -523,6 +523,8 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
 @property (nonatomic, assign) BOOL isCurrentlyOnScreen;
 @property (nonatomic, strong) FTPopOverMenuConfiguration *config;
 
+@property (nonatomic, assign) CGFloat keyboardOffset;
+
 @end
 
 @implementation FTPopOverMenu
@@ -541,16 +543,17 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
          withMenuArray:(NSArray *)menuArray
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull keyboardOffset:0.0 withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showForSender:(UIView *)sender
               delegate:(id<FTPopOverMenuDelegate>)delegate
+        keyboardOffset:(CGFloat)keyboardOffset
          withMenuArray:(NSArray *)menuArray
             imageArray:(NSArray *)imageArray
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull keyboardOffset:keyboardOffset withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showForSender:(UIView *)sender
@@ -560,7 +563,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
          configuration:(FTPopOverMenuConfiguration *)configuration
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:sender delegate:delegate window:nil senderFrame:CGRectNull keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromEvent:(UIEvent *)event
@@ -568,7 +571,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
          withMenuArray:(NSArray *)menuArray
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull keyboardOffset:0.0 withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromEvent:(UIEvent *)event
@@ -577,7 +580,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
             imageArray:(NSArray *)imageArray
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromEvent:(UIEvent *)event delegate:(id<FTPopOverMenuDelegate>)delegate
@@ -586,7 +589,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
          configuration:(FTPopOverMenuConfiguration *)configuration
              doneBlock:(FTPopOverMenuDoneBlock)doneBlock
           dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:[event.allTouches.anyObject view] delegate:delegate window:event.allTouches.anyObject.window senderFrame:CGRectNull keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromSenderFrame:(CGRect )senderFrame
@@ -594,7 +597,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
                withMenuArray:(NSArray *)menuArray
                    doneBlock:(FTPopOverMenuDoneBlock)doneBlock
                 dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame keyboardOffset:0.0 withMenu:menuArray imageNameArray:nil config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromSenderFrame:(CGRect )senderFrame
@@ -603,7 +606,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
                   imageArray:(NSArray *)imageArray
                    doneBlock:(FTPopOverMenuDoneBlock)doneBlock
                 dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:nil doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 + (void) showFromSenderFrame:(CGRect )senderFrame
@@ -613,7 +616,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
                configuration:(FTPopOverMenuConfiguration *)configuration
                    doneBlock:(FTPopOverMenuDoneBlock)doneBlock
                 dismissBlock:(FTPopOverMenuDismissBlock)dismissBlock {
-    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
+    [[self sharedInstance] showForSender:nil delegate:delegate window:nil senderFrame:senderFrame keyboardOffset:0.0 withMenu:menuArray imageNameArray:imageArray config:configuration doneBlock:doneBlock dismissBlock:dismissBlock];
 }
 
 +(void)dismiss {
@@ -672,7 +675,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
 }
 
 - (CGFloat)heightScreen {
-    return UIScreen.mainScreen.bounds.size.height;
+    return UIScreen.mainScreen.bounds.size.height - self.keyboardOffset;
 }
 
 - (void)onChangeStatusBarOrientationNotification:(NSNotification *)notification {
@@ -687,6 +690,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
               delegate:(id<FTPopOverMenuDelegate>)delegate
                 window:(UIWindow*)window
            senderFrame:(CGRect )senderFrame
+        keyboardOffset:(CGFloat)keyboardOffset
               withMenu:(NSArray *)menuArray
         imageNameArray:(NSArray *)imageNameArray
                 config:(FTPopOverMenuConfiguration *)config
@@ -699,6 +703,7 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
         [self.backgroundView addSubview:self.popMenuView];
         
         self.sender = sender;
+        self.keyboardOffset = keyboardOffset;
         self.senderFrame = senderFrame;
         self.menuArray = menuArray;
         self.menuImageArray = imageNameArray;
