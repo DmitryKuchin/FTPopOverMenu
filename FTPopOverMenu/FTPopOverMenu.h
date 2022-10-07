@@ -202,6 +202,7 @@ typedef void (^FTPopOverMenuDismissBlock)(void);
  */
 + (void) showFromEvent:(UIEvent *)event
               delegate:(id<FTPopOverMenuDelegate>)delegate
+        keyboardOffset:(CGFloat)keyboardOffset
          withMenuArray:(NSArray *)menuArray
             imageArray:(NSArray *)imageArray
          configuration:(FTPopOverMenuConfiguration *)configuration
