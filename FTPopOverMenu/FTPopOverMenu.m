@@ -879,7 +879,9 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
                          self.popMenuView.transform = CGAffineTransformMakeScale(0.1, 0.1);
                      }completion:^(BOOL finished) {
                          if (finished) {
-                             [self.popMenuView removeFromSuperview];
+                             for (UIView *view in [self.backgroundView subviews]) {
+                                 [view removeFromSuperview];
+                             }
                              [self.backgroundView removeFromSuperview];
                              if (selectedIndex < 0) {
                                  if (self.dismissBlock) {
