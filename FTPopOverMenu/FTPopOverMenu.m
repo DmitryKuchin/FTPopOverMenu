@@ -172,13 +172,13 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
         
         [self getImageWithResource:menuImage
                         completion:^(UIImage *image) {
-                            if (configuration.ignoreImageOriginalColor) {
-                                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                            }
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                self.iconImageView.image = image;
-                            });
-                        }];
+            if (configuration.ignoreImageOriginalColor) {
+                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.iconImageView.image = image;
+            });
+        }];
         [self.contentView addSubview:self.iconImageView];
     }
     self.menuNameLabel.frame = menuNameRect;
@@ -805,8 +805,8 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
                          config:self.config
                  arrowDirection:arrowDirection
                       doneBlock:^(NSInteger selectedIndex) {
-                          [self doneActionWithSelectedIndex:selectedIndex];
-                      }];
+        [self doneActionWithSelectedIndex:selectedIndex];
+    }];
     
     [self setAnchorPoint:anchorPoint forView:_popMenuView];
     
@@ -858,9 +858,11 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
     self.isCurrentlyOnScreen = YES;
     [UIView animateWithDuration:FTDefaultAnimationDuration
                      animations:^{
-                         self.popMenuView.alpha = 1;
-                         self.popMenuView.transform = CGAffineTransformMakeScale(1, 1);
-                     }];
+        for (UIView *view in [self.backgroundView subviews]) {
+            view.alpha = 1;
+            view.transform = CGAffineTransformMakeScale(1, 1);
+        }
+    }];
 }
 
 #pragma mark - dismiss animation
@@ -875,25 +877,27 @@ typedef NS_ENUM(NSUInteger, FTPopOverMenuArrowDirection) {
 - (void)doneActionWithSelectedIndex:(NSInteger)selectedIndex {
     [UIView animateWithDuration:FTDefaultAnimationDuration
                      animations:^{
-                         self.popMenuView.alpha = 0;
-                         self.popMenuView.transform = CGAffineTransformMakeScale(0.1, 0.1);
-                     }completion:^(BOOL finished) {
-                         if (finished) {
-                             for (UIView *view in [self.backgroundView subviews]) {
-                                 [view removeFromSuperview];
-                             }
-                             [self.backgroundView removeFromSuperview];
-                             if (selectedIndex < 0) {
-                                 if (self.dismissBlock) {
-                                     self.dismissBlock();
-                                 }
-                             }else{
-                                 if (self.doneBlock) {
-                                     self.doneBlock(selectedIndex);
-                                 }
-                             }
-                         }
-                     }];
+        for (UIView *view in [self.backgroundView subviews]) {
+            view.alpha = 0;
+            view.transform = CGAffineTransformMakeScale(0.1, 0.1);
+        }
+    }completion:^(BOOL finished) {
+        if (finished) {
+            for (UIView *view in [self.backgroundView subviews]) {
+                [view removeFromSuperview];
+            }
+            [self.backgroundView removeFromSuperview];
+            if (selectedIndex < 0) {
+                if (self.dismissBlock) {
+                    self.dismissBlock();
+                }
+            }else{
+                if (self.doneBlock) {
+                    self.doneBlock(selectedIndex);
+                }
+            }
+        }
+    }];
 }
 
 @end
